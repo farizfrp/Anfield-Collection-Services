@@ -231,11 +231,13 @@ app.post('/getMerchantName', asyncHandler(async (req, res) => {
 
 
 
-app.get('/getMerchantOrders', asyncHandler(async (req, res) => {
+app.post('/getMerchantOrders', asyncHandler(async (req, res) => {
   //res.setHeader('Content-Type', 'application/json');
 
-   
-  const x = await getMerchantOrders('EtYgk5SAmBe63ERd1WveRJZ299C2',"2019-11-02T17:00:00.000+00:00","2019-12-05T17:00:00.000+00:00");
+  merchant=req.body.data.merchant;
+  start=req.body.data.start;
+  end=req.body.data.end;
+  const x = await getMerchantOrders(merchant,"2019-11-02T17:00:00.000+00:00","2333-12-05T17:00:00.000+00:00");
   res.send(x);
   
 }))
@@ -245,7 +247,7 @@ async function getMerchantOrders(merchant,start,end){
 const status = "settlement";
   const MyOrders = dbo.collection('orders');
   const project =  { 
-    products: { $elemMatch : { "title" : merchant } },created_on:1,'payment.transaction_status':1,id:1,userid:1
+    products: { $elemMatch : { "title" : merchant } },created_on:1,'payment.transaction_status':1,id:1,userid:1,username:1
 }  
  // const merchant=merchant; ,  "payment.transaction_status": status 
 

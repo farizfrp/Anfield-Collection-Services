@@ -1,0 +1,3 @@
+{"_id":{"$oid":"5dc82450fedc5215986760de"},"type":"bahan","value":[{"name":"kulit"},{"name":"daun"},{"name":"undefined"}]}
+{"_id":{"$oid":"5dc824ab854b24159867955c"},"type":"jenis","value":[{"name":"Tas"},{"name":"Souvenir"}]}
+{"_id":{"$oid":"5dc82be3854b24159867955d"},"type":"proses","value":[{"name":"Jahit"},{"name":"mesin"},{"name":"undefined"},{"name":"Anyam"}]}
