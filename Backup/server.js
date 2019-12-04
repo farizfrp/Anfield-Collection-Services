@@ -5,8 +5,7 @@ const pino = require('express-pino-logger')();
 const firebase = require('firebase');
 const app = express();
 var bodyParser = require('body-parser');
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true }));
+
 const firebaseConfig = {
   apiKey: "AIzaSyAqCyweTU7W-2JbOTcdEYpU8a8z-QYyf_c",
   authDomain: "fir-reactnative-e4275.firebaseapp.com",

@@ -22,7 +22,7 @@ firebase.initializeApp(firebaseConfig);
 //var storage = firebase.storage();
 app.use(pino);
 app.listen(3001, () =>
-  console.log('Express server is running on localhost:3001')
+  console.log('Expressxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxserver is running on localhost:3001')
 );
 var data;
 const midtransKey = 'U0ItTWlkLXNlcnZlci1BZGtQRWgtZ21na3RtbnpXWVQ0aFUzeXU6'
@@ -93,13 +93,16 @@ var invoice = {
   terms: "Alamat : "
 };
 
-
-
+const longUri='mongodb://farizaldo:Smpn21bekasi@cluster0-shard-00-00-kq9t0.mongodb.net:27017/test?ssl=true&authSource=admin&retryWrites=true&w=majority';
+const shareGrid = "mongodb://admin:qL1q06Tm73ddUNAU@SG-anfieldcollection-28478.servers.mongodirector.com:27017/admin";
+var uriLocal ="mongodb://localhost:27017/mydb";
+var uriCloud ="mongodb://anfield1:Smpn21bekasi@cluster0-kq9t0.gcp.mongodb.net/test?ssl=true&authMechanism=SCRAM-SHA-1&authSource=admin&retryWrites=true&w=majority";
+//var uriCloud ="mongodb+srv://anfield1:Smpn21bekasi@cluster0-kq9t0.gcp.mongodb.net/test?retryWrites=true&w=majority&ssl=true";
 
 var db; connectDB();
 async function connectDB() {
-  db = await MONGO.connect(url);
-  
+  db = await MONGO.connect(longUri,{ useNewUrlParser: true });
+  console.log("Connected")
 }
 
 function makeid(length) {
@@ -169,7 +172,13 @@ async function categoriesType(type) {
 
   return result;
 }
+app.get('/', asyncHandler(async (req, res) => {
+  //res.setHeader('Content-Type', 'application/json');
 
+ await connectDB()
+ res.send('connected');
+   
+}))
 app.get('/getProductList', asyncHandler(async (req, res) => {
   //res.setHeader('Content-Type', 'application/json');
 
@@ -280,7 +289,8 @@ for(var order of orders){
   prod =order.products[0];
   var id={id:order.id}
   var userid={userid:order.userid}
-  Object.assign(prod,order.payment,id,userid)
+  var username={username:order.username}
+  Object.assign(prod,order.payment,id,userid,username)
    
 if(result[index].date==(new Date(order.created_on)).toLocaleDateString()){
  
@@ -482,9 +492,9 @@ const userId = req.body.userId
 async function pushProduct(data) {
 
   const dbo = db.db("anfield");
-
-  const MyCarts = dbo.collection('products');
-  MyCarts.insert(data);
+  data.sell = 0;
+  const MyCollection = dbo.collection('products');
+  MyCollection.insert(data);
 
 
   return;
@@ -513,6 +523,7 @@ app.post('/addProduct', asyncHandler(async (req, res) => {
 async function pushAccount(data) {
 
   const dbo = db.db("anfield");
+  data.role ="user"
 data.status='active'
   const MyCarts = dbo.collection('accounts');
   MyCarts.insert(data);
@@ -853,10 +864,11 @@ app.post('/checkPayment', asyncHandler(async (req, res) => {
   console.log("checkPayment")
   const dbo = db.db("anfield");
   const MyOrders = dbo.collection('orders');
-const orderId= req.body.idorder
+const orderId= req.body.order_id
 
  
   const oldPayment =await MyOrders.findOne({id:orderId});
+  if(!oldPayment) {res.send('notFound'); return;}
   const oldStatus = oldPayment.payment.transaction_status;
    
   if (oldStatus=='settlement'){res.send('notUpdated'); return;}
@@ -869,7 +881,7 @@ if(oldStatus == newStatus) {res.send('notUpdated'); return;}
 await doInvoice(orderId);
  
  
-  await MyOrders.updateOne({ "payment.order_id": req.body.idorder }, { $set: { "payment": payment } })
+  await MyOrders.updateOne({ "payment.order_id": orderId }, { $set: { "payment": payment } })
   //var products = await MyOrders.find( { "products.title": "spPR3mbUETQ6aeXwtNuSdyxzIbV2" }, { created_on:0,shipping:0,payment:0,_id:0, products: { $slice: -1 } } ).pretty()
 
   const newOrder =await MyOrders.findOne({id:orderId});
